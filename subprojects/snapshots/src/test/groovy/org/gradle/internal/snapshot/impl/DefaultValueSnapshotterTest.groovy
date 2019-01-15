@@ -200,11 +200,11 @@ class DefaultValueSnapshotterTest extends Specification {
     def "creates isolated array"() {
         expect:
         def isolated1 = snapshotter.isolate([] as String[])
-        isolated1 instanceof ArrayValueSnapshot
+        isolated1 instanceof IsolatedArray
         isolated1.isolate() == [] as String[]
 
         def isolated2 = snapshotter.isolate(["123"] as String[])
-        isolated2 instanceof ArrayValueSnapshot
+        isolated2 instanceof IsolatedArray
         isolated2.isolate() == ["123"] as String[]
     }
 
@@ -224,11 +224,11 @@ class DefaultValueSnapshotterTest extends Specification {
     def "creates isolated list"() {
         expect:
         def isolated1 = snapshotter.isolate([])
-        isolated1 instanceof ListValueSnapshot
+        isolated1 instanceof IsolatedList
         isolated1.isolate() == []
 
         def isolated2 = snapshotter.isolate(["123"])
-        isolated2 instanceof ListValueSnapshot
+        isolated2 instanceof IsolatedList
         isolated2.isolate() == ["123"]
     }
 
@@ -260,11 +260,11 @@ class DefaultValueSnapshotterTest extends Specification {
     def "creates isolated set"() {
         expect:
         def isolated1 = snapshotter.isolate([] as Set)
-        isolated1 instanceof SetValueSnapshot
+        isolated1 instanceof IsolatedSet
         isolated1.isolate() == [] as Set
 
         def isolated2 = snapshotter.isolate(["123"] as Set)
-        isolated2 instanceof SetValueSnapshot
+        isolated2 instanceof IsolatedSet
         isolated2.isolate() == ["123"] as Set
     }
 
@@ -288,11 +288,11 @@ class DefaultValueSnapshotterTest extends Specification {
     def "creates isolated map"() {
         expect:
         def isolated1 = snapshotter.isolate([:])
-        isolated1 instanceof MapValueSnapshot
+        isolated1 instanceof IsolatedMap
         isolated1.isolate() == [:]
 
         def isolated2 = snapshotter.isolate([a: "123"])
-        isolated2 instanceof MapValueSnapshot
+        isolated2 instanceof IsolatedMap
         isolated2.isolate() == [a: "123"]
     }
 

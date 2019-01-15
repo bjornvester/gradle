@@ -389,32 +389,32 @@ public class DefaultValueSnapshotter implements ValueSnapshotter {
 
         @Override
         public Isolatable<?> emptyArray() {
-            return ArrayValueSnapshot.EMPTY;
+            return IsolatedArray.EMPTY;
         }
 
         @Override
         public Isolatable<?> array(ImmutableList<Isolatable<?>> elements) {
-            return new ArrayValueSnapshot(Cast.uncheckedCast(elements));
+            return new IsolatedArray(elements);
         }
 
         @Override
         public Isolatable<?> emptyList() {
-            return ListValueSnapshot.EMPTY;
+            return IsolatedList.EMPTY;
         }
 
         @Override
         public Isolatable<?> list(ImmutableList<Isolatable<?>> elements) {
-            return new ListValueSnapshot(Cast.uncheckedCast(elements));
+            return new IsolatedList(elements);
         }
 
         @Override
         public Isolatable<?> set(ImmutableSet<Isolatable<?>> elements) {
-            return new SetValueSnapshot(Cast.uncheckedCast(elements));
+            return new IsolatedSet(elements);
         }
 
         @Override
         public Isolatable<?> map(ImmutableMap<Isolatable<?>, Isolatable<?>> elements) {
-            return new MapValueSnapshot(Cast.uncheckedCast(elements));
+            return new IsolatedMap(elements);
         }
     }
 }

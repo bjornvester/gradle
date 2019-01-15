@@ -30,17 +30,29 @@ class IsolationTest extends Specification {
     def "can isolate Strings"() {
         given:
         def original = "Original String"
-        def snapshot = snapshotter.snapshot(original)
+        def snapshot = snapshotter.isolate(original)
 
         expect:
         snapshot instanceof Isolatable<String>
         (snapshot as Isolatable<String>).isolate() == original
     }
 
+    def "can isolate an empty array of scalars"() {
+        given:
+        def original = [] as String[]
+        def snapshot = snapshotter.isolate(original)
+
+        expect:
+        snapshot instanceof Isolatable<Object[]>
+        def isolated = (snapshot as Isolatable<Object[]>).isolate()
+        isolated == original
+        !isolated.is(original)
+    }
+
     def "can isolate an array of scalars"() {
         given:
         def original = ["Hello", "GoodBye"] as String[]
-        def snapshot = snapshotter.snapshot(original)
+        def snapshot = snapshotter.isolate(original)
 
         expect:
         snapshot instanceof Isolatable<Object[]>
@@ -52,7 +64,7 @@ class IsolationTest extends Specification {
     def "can isolate an array of an array of scalars"() {
         given:
         def original = [["Hello", "GoodBye"], ["Up", "Down"], ["Left", "Right"]] as String[][]
-        def snapshot = snapshotter.snapshot(original)
+        def snapshot = snapshotter.isolate(original)
 
         expect:
         snapshot instanceof Isolatable<Object[]>
@@ -61,14 +73,50 @@ class IsolationTest extends Specification {
         !isolated.is(original)
     }
 
-    def "can isolate a List"() {
+    def "can isolate an empty List"() {
         given:
-        def original = ["Hello", "GoodBye"]
-        def snapshot = snapshotter.snapshot(original)
+        def original = []
+        def snapshot = snapshotter.isolate(original)
 
         expect:
         snapshot instanceof Isolatable<List>
         def isolated = (snapshot as Isolatable<List>).isolate()
+        isolated == original
+        !isolated.is(original)
+    }
+
+    def "can isolate a List"() {
+        given:
+        def original = ["Hello", "GoodBye"]
+        def snapshot = snapshotter.isolate(original)
+
+        expect:
+        snapshot instanceof Isolatable<List>
+        def isolated = (snapshot as Isolatable<List>).isolate()
+        isolated == original
+        !isolated.is(original)
+    }
+
+    def "can isolate a Set"() {
+        given:
+        def original = ["Hello", "GoodBye"] as Set<String>
+        def snapshot = snapshotter.isolate(original)
+
+        expect:
+        snapshot instanceof Isolatable<Set>
+        def isolated = (snapshot as Isolatable<Set>).isolate()
+        isolated == original
+        !isolated.is(original)
+    }
+
+    def "can isolate a Map"() {
+        given:
+        def original = [a: "Hello", b: "GoodBye"]
+        def snapshot = snapshotter.isolate(original)
+
+        expect:
+        snapshot instanceof Isolatable<Map>
+        def isolated = (snapshot as Isolatable<Map>).isolate()
         isolated == original
         !isolated.is(original)
     }
