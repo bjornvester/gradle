@@ -16,12 +16,13 @@
 
 package org.gradle.internal.snapshot.impl;
 
-import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableList;
+import org.gradle.internal.Pair;
 import org.gradle.internal.snapshot.ValueSnapshot;
 import org.gradle.internal.snapshot.ValueSnapshotter;
 
 public class MapValueSnapshot extends AbstractMapSnapshot<ValueSnapshot> implements ValueSnapshot {
-    public MapValueSnapshot(ImmutableMap<ValueSnapshot, ValueSnapshot> entries) {
+    public MapValueSnapshot(ImmutableList<Pair<ValueSnapshot, ValueSnapshot>> entries) {
         super(entries);
     }
 

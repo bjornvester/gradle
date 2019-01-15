@@ -18,6 +18,7 @@ package org.gradle.internal.snapshot.impl;
 
 import com.google.common.collect.ImmutableList;
 import org.gradle.internal.isolation.Isolatable;
+import org.gradle.internal.snapshot.ValueSnapshot;
 
 import javax.annotation.Nullable;
 
@@ -26,6 +27,18 @@ public class IsolatedArray extends AbstractArraySnapshot<Isolatable<?>> implemen
 
     public IsolatedArray(ImmutableList<Isolatable<?>> elements) {
         super(elements);
+    }
+
+    @Override
+    public ValueSnapshot asSnapshot() {
+        if (elements.isEmpty()) {
+            return ArrayValueSnapshot.EMPTY;
+        }
+        ImmutableList.Builder<ValueSnapshot> builder = ImmutableList.builderWithExpectedSize(elements.size());
+        for (Isolatable<?> element : elements) {
+            builder.add(element.asSnapshot());
+        }
+        return new ArrayValueSnapshot(builder.build());
     }
 
     @Override

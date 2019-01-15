@@ -44,6 +44,11 @@ public class NullValueSnapshot implements ValueSnapshot, Isolatable<Object> {
     }
 
     @Override
+    public ValueSnapshot asSnapshot() {
+        return this;
+    }
+
+    @Override
     public Object isolate() {
         return null;
     }
