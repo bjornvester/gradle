@@ -38,7 +38,7 @@ import org.gradle.api.internal.TaskInternal;
 import org.gradle.api.internal.file.FileResolver;
 import org.gradle.api.internal.project.ProjectInternal;
 import org.gradle.api.internal.tasks.TaskPropertyUtils;
-import org.gradle.api.internal.tasks.properties.GetOutputFilesVisitor;
+import org.gradle.api.internal.tasks.properties.FileParameterUtils;
 import org.gradle.api.internal.tasks.properties.InputFilePropertyType;
 import org.gradle.api.internal.tasks.properties.OutputFilePropertySpec;
 import org.gradle.api.internal.tasks.properties.OutputFilePropertyType;
@@ -612,7 +612,7 @@ public class DefaultExecutionPlan implements ExecutionPlan {
                             new Runnable() {
                                 @Override
                                 public void run() {
-                                    GetOutputFilesVisitor.resolveOutputFilePropertySpecs(task.toString(), propertyName, value, filePropertyType, resolver, new Consumer<OutputFilePropertySpec>() {
+                                    FileParameterUtils.resolveOutputFilePropertySpecs(task.toString(), propertyName, value, filePropertyType, resolver, new Consumer<OutputFilePropertySpec>() {
                                         @Override
                                         public void accept(OutputFilePropertySpec outputFilePropertySpec) {
                                             mutations.outputPaths.addAll(canonicalizedPaths(canonicalizedFileCache, outputFilePropertySpec.getPropertyFiles()));
