@@ -19,7 +19,5 @@ package org.gradle.api.internal.tasks.properties;
 import org.gradle.internal.reflect.PropertyMetadata;
 
 public interface PropertyValueVisitor {
-    boolean shouldVisit(PropertyVisitor visitor);
-
     void visitPropertyValue(String propertyName, PropertyValue value, PropertyMetadata propertyMetadata, PropertyVisitor visitor, BeanPropertyContext context);
 }

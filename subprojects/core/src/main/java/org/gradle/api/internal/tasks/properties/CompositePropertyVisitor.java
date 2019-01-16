@@ -26,16 +26,6 @@ public class CompositePropertyVisitor implements PropertyVisitor {
     }
 
     @Override
-    public boolean visitOutputFilePropertiesOnly() {
-        for (PropertyVisitor visitor : visitors) {
-            if (!visitor.visitOutputFilePropertiesOnly()) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    @Override
     public void visitInputFileProperty(String propertyName, boolean optional, boolean skipWhenEmpty, Class<? extends FileNormalizer> fileNormalizer, PropertyValue value, InputFilePropertyType filePropertyType) {
         for (PropertyVisitor visitor : visitors) {
             visitor.visitInputFileProperty(propertyName, optional, skipWhenEmpty, fileNormalizer, value, filePropertyType);

@@ -77,11 +77,6 @@ class DefaultTypeMetadataStoreTest extends Specification {
         }
 
         @Override
-        boolean shouldVisit(PropertyVisitor visitor) {
-            return true
-        }
-
-        @Override
         void visitPropertyValue(String propertyName, PropertyValue value, PropertyMetadata propertyMetadata, PropertyVisitor visitor, BeanPropertyContext context) {
         }
     }

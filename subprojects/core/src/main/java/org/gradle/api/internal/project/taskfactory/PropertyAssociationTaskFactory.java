@@ -20,12 +20,10 @@ import org.gradle.api.Task;
 import org.gradle.api.internal.TaskInternal;
 import org.gradle.api.internal.project.ProjectInternal;
 import org.gradle.api.internal.tasks.TaskPropertyUtils;
-import org.gradle.api.internal.tasks.properties.InputFilePropertyType;
 import org.gradle.api.internal.tasks.properties.OutputFilePropertyType;
 import org.gradle.api.internal.tasks.properties.PropertyValue;
 import org.gradle.api.internal.tasks.properties.PropertyVisitor;
 import org.gradle.api.internal.tasks.properties.PropertyWalker;
-import org.gradle.api.tasks.FileNormalizer;
 import org.gradle.internal.reflect.Instantiator;
 
 public class PropertyAssociationTaskFactory implements ITaskFactory {
@@ -49,36 +47,11 @@ public class PropertyAssociationTaskFactory implements ITaskFactory {
         return task;
     }
 
-    private static class Listener implements PropertyVisitor {
+    private static class Listener extends PropertyVisitor.Adapter {
         private final Task task;
 
         public Listener(Task task) {
             this.task = task;
-        }
-
-        @Override
-        public boolean visitOutputFilePropertiesOnly() {
-            return true;
-        }
-
-        @Override
-        public void visitInputFileProperty(String propertyName, boolean optional, boolean skipWhenEmpty, Class<? extends FileNormalizer> fileNormalizer, PropertyValue value, InputFilePropertyType filePropertyType) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public void visitInputProperty(String propertyName, PropertyValue value, boolean optional) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public void visitDestroyableProperty(Object value) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public void visitLocalStateProperty(Object value) {
-            throw new UnsupportedOperationException();
         }
 
         @Override
