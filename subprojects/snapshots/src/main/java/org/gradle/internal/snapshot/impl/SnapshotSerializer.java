@@ -42,9 +42,10 @@ public class SnapshotSerializer extends AbstractSerializer<ValueSnapshot> {
     private static final int SET_SNAPSHOT = 13;
     private static final int MAP_SNAPSHOT = 14;
     private static final int PROVIDER_SNAPSHOT = 15;
-    private static final int MANAGED_SNAPSHOT = 16;
-    private static final int IMPLEMENTATION_SNAPSHOT = 17;
-    private static final int DEFAULT_SNAPSHOT = 18;
+    private static final int NAMED_MANAGED_SNAPSHOT = 16;
+    private static final int MANAGED_SNAPSHOT = 17;
+    private static final int IMPLEMENTATION_SNAPSHOT = 18;
+    private static final int DEFAULT_SNAPSHOT = 19;
 
     private final HashCodeSerializer serializer = new HashCodeSerializer();
     private final Serializer<ImplementationSnapshot> implementationSnapshotSerializer = new ImplementationSnapshot.SerializerImpl();
@@ -53,7 +54,6 @@ public class SnapshotSerializer extends AbstractSerializer<ValueSnapshot> {
     public ValueSnapshot read(Decoder decoder) throws Exception {
         int type = decoder.readSmallInt();
         int size;
-        ValueSnapshot[] elements;
         switch (type) {
             case NULL_SNAPSHOT:
                 return NullValueSnapshot.INSTANCE;
@@ -101,11 +101,15 @@ public class SnapshotSerializer extends AbstractSerializer<ValueSnapshot> {
                 return new MapValueSnapshot(mapBuilder.build());
             case PROVIDER_SNAPSHOT:
                 return new ProviderSnapshot(read(decoder));
-            case MANAGED_SNAPSHOT:
+            case NAMED_MANAGED_SNAPSHOT:
                 String className = decoder.readString();
+                String value = decoder.readString();
+                return new NamedManagedTypeSnapshot(className, value);
+            case MANAGED_SNAPSHOT:
+                String managedClassName = decoder.readString();
                 size = decoder.readSmallInt();
                 ImmutableList<ValueSnapshot> stateElements = readList(decoder, size);
-                return new ManagedTypeSnapshot(className, stateElements);
+                return new ManagedTypeSnapshot(managedClassName, stateElements);
             case IMPLEMENTATION_SNAPSHOT:
                 return implementationSnapshotSerializer.read(decoder);
             case DEFAULT_SNAPSHOT:
@@ -211,6 +215,11 @@ public class SnapshotSerializer extends AbstractSerializer<ValueSnapshot> {
             encoder.writeSmallInt(PROVIDER_SNAPSHOT);
             ProviderSnapshot providerSnapshot = (ProviderSnapshot) snapshot;
             write(encoder, providerSnapshot.getValue());
+        } else if (snapshot instanceof NamedManagedTypeSnapshot) {
+            encoder.writeSmallInt(NAMED_MANAGED_SNAPSHOT);
+            NamedManagedTypeSnapshot managedTypeSnapshot = (NamedManagedTypeSnapshot) snapshot;
+            encoder.writeString(managedTypeSnapshot.getClassName());
+            encoder.writeString(managedTypeSnapshot.getValue());
         } else if (snapshot instanceof ManagedTypeSnapshot) {
             encoder.writeSmallInt(MANAGED_SNAPSHOT);
             ManagedTypeSnapshot managedTypeSnapshot = (ManagedTypeSnapshot) snapshot;
