@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 the original author or authors.
+ * Copyright 2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,22 +16,38 @@
 
 package org.gradle.internal.snapshot.impl;
 
-import com.google.common.collect.ImmutableList;
 import org.gradle.api.Named;
 import org.gradle.api.internal.model.NamedObjectInstantiator;
 import org.gradle.internal.Cast;
+import org.gradle.internal.hash.Hasher;
 import org.gradle.internal.isolation.Isolatable;
+import org.gradle.internal.snapshot.ValueSnapshot;
 
 import javax.annotation.Nullable;
 
-public class CoercingStringValueSnapshot extends StringValueSnapshot {
-    private final String value;
+public class IsolatedNamedManagedType implements Isolatable<Object> {
+    private final NamedObjectInstantiator.Managed value;
     private final NamedObjectInstantiator instantiator;
 
-    public CoercingStringValueSnapshot(String value, NamedObjectInstantiator instantiator) {
-        super(value);
+    public IsolatedNamedManagedType(NamedObjectInstantiator.Managed value, NamedObjectInstantiator instantiator) {
         this.value = value;
         this.instantiator = instantiator;
+    }
+
+    @Override
+    public ValueSnapshot asSnapshot() {
+        return new NamedManagedTypeSnapshot(value.publicType().getName(), value.getName());
+    }
+
+    @Override
+    public void appendToHasher(Hasher hasher) {
+        hasher.putString(value.publicType().getName());
+        hasher.putString(value.getName());
+    }
+
+    @Override
+    public Object isolate() {
+        return value;
     }
 
     @Nullable
@@ -40,12 +56,9 @@ public class CoercingStringValueSnapshot extends StringValueSnapshot {
         if (type.isInstance(value)) {
             return Cast.uncheckedCast(this);
         }
-        if (type.isEnum()) {
-            return Cast.uncheckedCast(new IsolatableEnumValueSnapshot(Enum.valueOf(type.asSubclass(Enum.class), getValue())));
-        }
-        if (Named.class.isAssignableFrom(type)) {
-            ImmutableList<Isolatable<?>> state = ImmutableList.of(new StringValueSnapshot(getValue()));
-            return Cast.uncheckedCast(new IsolatedManagedType(type, instantiator, state));
+        if (value.publicType().getName().equals(type.getName())) {
+            NamedObjectInstantiator.Managed newValue = (NamedObjectInstantiator.Managed) instantiator.named(type.asSubclass(Named.class), value.getName());
+            return Cast.uncheckedCast(new IsolatedNamedManagedType(newValue, instantiator));
         }
         return null;
     }

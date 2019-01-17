@@ -19,7 +19,7 @@ package org.gradle.internal.instantiation;
 /**
  * Mixed into each generated class, to mark it as fully managed.
  */
-public interface Managed {
+public interface HasManagedState {
     /**
      * Returns a snapshot of the current state of this object. This can be passed to the {@link Factory#fromState(Class, Object[])} method to recreate this object from the snapshot.
      * The state can be fingerprinted to generate a fingerprint of this object.

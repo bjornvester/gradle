@@ -18,17 +18,17 @@ package org.gradle.internal.snapshot.impl;
 
 import com.google.common.collect.ImmutableList;
 import org.gradle.internal.Cast;
-import org.gradle.internal.instantiation.Managed;
+import org.gradle.internal.instantiation.HasManagedState;
 import org.gradle.internal.isolation.Isolatable;
 import org.gradle.internal.snapshot.ValueSnapshot;
 
 import javax.annotation.Nullable;
 
-public class IsolatedManagedTypeSnapshot extends AbstractManagedTypeSnapshot<Isolatable<?>> implements Isolatable<Object> {
-    private final Managed.Factory factory;
+public class IsolatedManagedType extends AbstractManagedTypeSnapshot<Isolatable<?>> implements Isolatable<Object> {
+    private final HasManagedState.Factory factory;
     private final Class<?> targetType;
 
-    public IsolatedManagedTypeSnapshot(Class<?> targetType, Managed.Factory factory, ImmutableList<Isolatable<?>> state) {
+    public IsolatedManagedType(Class<?> targetType, HasManagedState.Factory factory, ImmutableList<Isolatable<?>> state) {
         super(state);
         this.targetType = targetType;
         this.factory = factory;
@@ -60,7 +60,7 @@ public class IsolatedManagedTypeSnapshot extends AbstractManagedTypeSnapshot<Iso
             return Cast.uncheckedCast(this);
         }
         if (targetType.getName().equals(type.getName())) {
-            return Cast.uncheckedCast(new IsolatedManagedTypeSnapshot(type, factory, state));
+            return Cast.uncheckedCast(new IsolatedManagedType(type, factory, state));
         }
         return null;
     }

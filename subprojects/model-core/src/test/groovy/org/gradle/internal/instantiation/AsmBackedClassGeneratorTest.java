@@ -448,9 +448,9 @@ public class AsmBackedClassGeneratorTest {
     @Test
     public void canUnpackAndRecreateAbstractClassWithAbstractPropertyGetterAndSetter() throws Exception {
         BeanWithAbstractProperty bean = newInstance(BeanWithAbstractProperty.class);
-        assertThat(bean, instanceOf(Managed.class));
+        assertThat(bean, instanceOf(HasManagedState.class));
 
-        Managed managed = (Managed) bean;
+        HasManagedState managed = (HasManagedState) bean;
         assertEquals(BeanWithAbstractProperty.class, managed.publicType());
         Object[] state = managed.unpackState();
         assertThat(state.length, equalTo(1));
@@ -487,9 +487,9 @@ public class AsmBackedClassGeneratorTest {
     @Test
     public void canUnpackAndRecreateInstanceOfInterface() throws Exception {
         InterfaceBean bean = newInstance(InterfaceBean.class);
-        assertThat(bean, instanceOf(Managed.class));
+        assertThat(bean, instanceOf(HasManagedState.class));
 
-        Managed managed = (Managed) bean;
+        HasManagedState managed = (HasManagedState) bean;
         assertEquals(InterfaceBean.class, managed.publicType());
         Object[] state = managed.unpackState();
         assertThat(state.length, equalTo(2));
@@ -523,9 +523,9 @@ public class AsmBackedClassGeneratorTest {
     @Test
     public void canUnpackAndRecreateInstanceOfInterfaceWithDefaultMethodsOnly() throws Exception {
         InterfaceWithDefaultMethods bean = newInstance(InterfaceWithDefaultMethods.class);
-        assertThat(bean, instanceOf(Managed.class));
+        assertThat(bean, instanceOf(HasManagedState.class));
 
-        Managed managed = (Managed) bean;
+        HasManagedState managed = (HasManagedState) bean;
         assertEquals(InterfaceWithDefaultMethods.class, managed.publicType());
         Object[] state = managed.unpackState();
         assertThat(state.length, equalTo(0));
@@ -537,19 +537,19 @@ public class AsmBackedClassGeneratorTest {
     @Test
     public void doesNotMixManagedIntoClassWithFields() throws Exception {
         Bean bean = newInstance(Bean.class);
-        assertThat(bean, not(instanceOf(Managed.class)));
+        assertThat(bean, not(instanceOf(HasManagedState.class)));
     }
 
     @Test
     public void doesNotMixManagedIntoAbstractClassWithFields() throws Exception {
         AbstractBean bean = newInstance(AbstractBean.class, "value");
-        assertThat(bean, not(instanceOf(Managed.class)));
+        assertThat(bean, not(instanceOf(HasManagedState.class)));
     }
 
     @Test
     public void doesNotMixManagedIntoClassWithInheritedFields() throws Exception {
         AbstractBeanWithInheritedFields bean = newInstance(AbstractBeanWithInheritedFields.class, "value");
-        assertThat(bean, not(instanceOf(Managed.class)));
+        assertThat(bean, not(instanceOf(HasManagedState.class)));
     }
 
     @Test

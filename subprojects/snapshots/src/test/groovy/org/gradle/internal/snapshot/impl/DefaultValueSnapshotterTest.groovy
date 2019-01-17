@@ -492,7 +492,7 @@ class DefaultValueSnapshotterTest extends Specification {
 
         expect:
         def snapshot = snapshotter.snapshot(value)
-        snapshot instanceof ManagedTypeSnapshot
+        snapshot instanceof NamedManagedTypeSnapshot
         snapshot == snapshotter.snapshot(value)
         snapshot == snapshotter.snapshot(value1)
         snapshot != snapshotter.snapshot(value2)
@@ -505,7 +505,7 @@ class DefaultValueSnapshotterTest extends Specification {
 
         expect:
         def isolated = snapshotter.isolate(value)
-        isolated instanceof IsolatedManagedTypeSnapshot
+        isolated instanceof IsolatedNamedManagedType
         isolated.isolate().is(value)
     }
 
@@ -579,7 +579,7 @@ class DefaultValueSnapshotterTest extends Specification {
 
         expect:
         def isolated = snapshotter.isolate(value)
-        isolated instanceof IsolatedManagedTypeSnapshot
+        isolated instanceof IsolatedManagedType
         def copy = isolated.isolate()
         !copy.is(value)
         copy.prop1 == "a"
@@ -612,7 +612,7 @@ class DefaultValueSnapshotterTest extends Specification {
 
         expect:
         def isolated = snapshotter.isolate(value)
-        isolated instanceof IsolatedManagedTypeSnapshot
+        isolated instanceof IsolatedManagedType
         def copy = isolated.isolate()
         !copy.is(value)
         copy.prop1 == "a"

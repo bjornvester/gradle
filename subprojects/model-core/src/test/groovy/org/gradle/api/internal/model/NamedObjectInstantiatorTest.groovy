@@ -18,7 +18,7 @@ package org.gradle.api.internal.model
 
 import org.gradle.api.Named
 import org.gradle.api.reflect.ObjectInstantiationException
-import org.gradle.internal.instantiation.Managed
+import org.gradle.internal.instantiation.HasManagedState
 import org.gradle.test.fixtures.concurrent.ConcurrentSpec
 import org.gradle.util.Matchers
 import spock.lang.Ignore
@@ -57,7 +57,7 @@ class NamedObjectInstantiatorTest extends ConcurrentSpec {
     def "can unpack and recreate Named instance"() {
         expect:
         def n1 = factory.named(Named, "a")
-        n1 instanceof Managed
+        n1 instanceof HasManagedState
         n1.publicType() == Named
         def state = n1.unpackState()
         state.length == 1
@@ -94,13 +94,13 @@ class NamedObjectInstantiatorTest extends ConcurrentSpec {
         !n1.is(factory.named(Named, "a"))
         !n2.is(factory.named(Named, "b"))
 
-        n1 instanceof Managed
+        n1 instanceof HasManagedState
     }
 
     def "can unpack and recreate instance of subtype of Named"() {
         expect:
         def n1 = factory.named(CustomNamed, "a")
-        n1 instanceof Managed
+        n1 instanceof HasManagedState
         n1.publicType() == CustomNamed
         def state = n1.unpackState()
         state.length == 1
@@ -184,7 +184,7 @@ class NamedObjectInstantiatorTest extends ConcurrentSpec {
     def "can unpack and recreate instance of abstract Java class"() {
         expect:
         def n1 = factory.named(AbstractNamed, "a")
-        n1 instanceof Managed
+        n1 instanceof HasManagedState
         n1.publicType() == AbstractNamed
         def state = n1.unpackState()
         state.length == 1

@@ -21,7 +21,7 @@ import org.gradle.api.reflect.ObjectInstantiationException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
-public class ManagedTypeFactory implements Managed.Factory {
+public class ManagedTypeFactory implements HasManagedState.Factory {
     private final Constructor<?> constructor;
 
     // Used by generated code

@@ -25,7 +25,7 @@ import org.gradle.api.provider.Provider;
 import org.gradle.internal.Cast;
 import org.gradle.internal.Pair;
 import org.gradle.internal.classloader.ClassLoaderHierarchyHasher;
-import org.gradle.internal.instantiation.Managed;
+import org.gradle.internal.instantiation.HasManagedState;
 import org.gradle.internal.isolation.Isolatable;
 import org.gradle.internal.isolation.IsolatableFactory;
 import org.gradle.internal.isolation.IsolationException;
@@ -149,8 +149,12 @@ public class DefaultValueSnapshotter implements ValueSnapshotter, IsolatableFact
             T providerValueSnapshot = processValue(providerValue, visitor);
             return visitor.provider(providerValue, providerValueSnapshot);
         }
-        if (value instanceof Managed) {
-            Managed managed = (Managed) value;
+        if (value instanceof NamedObjectInstantiator.Managed) {
+            // Should merge with the following path. This path is optimized for a simple immutable value that wraps a string
+            return visitor.namedManaged((NamedObjectInstantiator.Managed) value);
+        }
+        if (value instanceof HasManagedState) {
+            HasManagedState managed = (HasManagedState) value;
             Object[] state = managed.unpackState();
             ImmutableList.Builder<T> builder = ImmutableList.builderWithExpectedSize(state.length);
             for (Object element : state) {
@@ -201,7 +205,9 @@ public class DefaultValueSnapshotter implements ValueSnapshotter, IsolatableFact
 
         T attributeValue(Attribute<?> value);
 
-        T managedValue(Managed value, ImmutableList<T> state);
+        T namedManaged(NamedObjectInstantiator.Managed value);
+
+        T managedValue(HasManagedState value, ImmutableList<T> state);
 
         T fromIsolatable(Isolatable<?> value);
 
@@ -280,7 +286,12 @@ public class DefaultValueSnapshotter implements ValueSnapshotter, IsolatableFact
         }
 
         @Override
-        public ValueSnapshot managedValue(Managed value, ImmutableList<ValueSnapshot> state) {
+        public ValueSnapshot namedManaged(NamedObjectInstantiator.Managed value) {
+            return new NamedManagedTypeSnapshot(value.publicType().getName(), value.getName());
+        }
+
+        @Override
+        public ValueSnapshot managedValue(HasManagedState value, ImmutableList<ValueSnapshot> state) {
             return new ManagedTypeSnapshot(value.publicType().getName(), state);
         }
 
@@ -390,8 +401,13 @@ public class DefaultValueSnapshotter implements ValueSnapshotter, IsolatableFact
         }
 
         @Override
-        public Isolatable<?> managedValue(Managed value, ImmutableList<Isolatable<?>> state) {
-            return new IsolatedManagedTypeSnapshot(value.publicType(), value.managedFactory(), state);
+        public Isolatable<?> namedManaged(NamedObjectInstantiator.Managed value) {
+            return new IsolatedNamedManagedType(value, namedObjectInstantiator);
+        }
+
+        @Override
+        public Isolatable<?> managedValue(HasManagedState value, ImmutableList<Isolatable<?>> state) {
+            return new IsolatedManagedType(value.publicType(), value.managedFactory(), state);
         }
 
         @Override

@@ -281,7 +281,7 @@ public class AsmBackedClassGenerator extends AbstractClassGenerator {
         private static final Type ACTION_TYPE = Type.getType(Action.class);
         private static final Type PROPERTY_INTERNAL_TYPE = Type.getType(PropertyInternal.class);
         private static final Type INSTANTIATOR_TYPE = Type.getType(Instantiator.class);
-        private static final Type MANAGED_TYPE = Type.getType(Managed.class);
+        private static final Type MANAGED_TYPE = Type.getType(HasManagedState.class);
 
         private static final String RETURN_VOID_FROM_OBJECT = Type.getMethodDescriptor(Type.VOID_TYPE, OBJECT_TYPE);
         private static final String RETURN_VOID_FROM_OBJECT_CLASS_DYNAMIC_OBJECT_INSTANTIATOR = Type.getMethodDescriptor(Type.VOID_TYPE, OBJECT_TYPE, CLASS_TYPE, DYNAMIC_OBJECT_TYPE, INSTANTIATOR_TYPE);
@@ -957,7 +957,7 @@ public class AsmBackedClassGenerator extends AbstractClassGenerator {
 
         @Override
         public void addManagedMethods(List<PropertyMetaData> properties) {
-            visitor.visitField(PV_FINAL_STATIC, FACTORY_FIELD, Type.getType(Managed.Factory.class).getDescriptor(), null, null);
+            visitor.visitField(PV_FINAL_STATIC, FACTORY_FIELD, Type.getType(HasManagedState.Factory.class).getDescriptor(), null, null);
 
             // Generate: <init>(Object[] state) { }
             MethodVisitor methodVisitor = visitor.visitMethod(ACC_PUBLIC | ACC_SYNTHETIC, "<init>", Type.getMethodDescriptor(VOID_TYPE, OBJECT_ARRAY_TYPE), null, EMPTY_STRINGS);
@@ -1007,8 +1007,8 @@ public class AsmBackedClassGenerator extends AbstractClassGenerator {
             methodVisitor.visitEnd();
 
             // Generate: Managed.Factory getFactory() { if (<factory-field> == null) { <factory-field> = new ManagedTypeFactory(this.getClass()); }; return <factory-field> }
-            methodVisitor = visitor.visitMethod(ACC_PUBLIC | ACC_SYNCHRONIZED, "managedFactory", Type.getMethodDescriptor(Type.getType(Managed.Factory.class)), null, EMPTY_STRINGS);
-            methodVisitor.visitFieldInsn(GETSTATIC, generatedType.getInternalName(), FACTORY_FIELD, Type.getType(Managed.Factory.class).getDescriptor());
+            methodVisitor = visitor.visitMethod(ACC_PUBLIC | ACC_SYNCHRONIZED, "managedFactory", Type.getMethodDescriptor(Type.getType(HasManagedState.Factory.class)), null, EMPTY_STRINGS);
+            methodVisitor.visitFieldInsn(GETSTATIC, generatedType.getInternalName(), FACTORY_FIELD, Type.getType(HasManagedState.Factory.class).getDescriptor());
             methodVisitor.visitInsn(DUP);
             Label label = new Label();
             methodVisitor.visitJumpInsn(IFNULL, label);
@@ -1020,7 +1020,7 @@ public class AsmBackedClassGenerator extends AbstractClassGenerator {
             methodVisitor.visitMethodInsn(Opcodes.INVOKEVIRTUAL, OBJECT_TYPE.getInternalName(), "getClass", RETURN_CLASS, false);
             methodVisitor.visitMethodInsn(INVOKESPECIAL, Type.getType(ManagedTypeFactory.class).getInternalName(), "<init>", Type.getMethodDescriptor(VOID_TYPE, CLASS_TYPE), false);
             methodVisitor.visitInsn(DUP);
-            methodVisitor.visitFieldInsn(PUTSTATIC, generatedType.getInternalName(), FACTORY_FIELD, Type.getType(Managed.Factory.class).getDescriptor());
+            methodVisitor.visitFieldInsn(PUTSTATIC, generatedType.getInternalName(), FACTORY_FIELD, Type.getType(HasManagedState.Factory.class).getDescriptor());
             methodVisitor.visitInsn(ARETURN);
             methodVisitor.visitMaxs(0, 0);
             methodVisitor.visitEnd();

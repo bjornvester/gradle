@@ -17,7 +17,6 @@
 package org.gradle.internal.snapshot.impl;
 
 import com.google.common.collect.ImmutableList;
-import org.gradle.internal.instantiation.Managed;
 import org.gradle.internal.snapshot.ValueSnapshot;
 import org.gradle.internal.snapshot.ValueSnapshotter;
 
@@ -50,7 +49,7 @@ public class ManagedTypeSnapshot extends AbstractManagedTypeSnapshot<ValueSnapsh
     @Override
     public ValueSnapshot snapshot(Object value, ValueSnapshotter snapshotter) {
         ValueSnapshot snapshot = snapshotter.snapshot(value);
-        if (value instanceof Managed) {
+        if (snapshot instanceof ManagedTypeSnapshot) {
             ManagedTypeSnapshot other = (ManagedTypeSnapshot) snapshot;
             if (state.equals(other.state)) {
                 return this;

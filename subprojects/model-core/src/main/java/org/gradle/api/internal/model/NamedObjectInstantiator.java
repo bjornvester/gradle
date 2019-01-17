@@ -28,7 +28,7 @@ import org.gradle.internal.Cast;
 import org.gradle.internal.Factory;
 import org.gradle.internal.UncheckedException;
 import org.gradle.internal.classloader.VisitableURLClassLoader;
-import org.gradle.internal.instantiation.Managed;
+import org.gradle.internal.instantiation.HasManagedState;
 import org.gradle.model.internal.asm.AsmClassGenerator;
 import org.gradle.model.internal.inspect.FormattingValidationProblemCollector;
 import org.gradle.model.internal.inspect.ValidationProblemCollector;
@@ -47,19 +47,22 @@ import static org.objectweb.asm.Opcodes.ACC_SYNTHETIC;
 import static org.objectweb.asm.Opcodes.ARETURN;
 import static org.objectweb.asm.Opcodes.V1_5;
 
-public class NamedObjectInstantiator implements Managed.Factory {
+public class NamedObjectInstantiator implements HasManagedState.Factory {
     public static final NamedObjectInstantiator INSTANCE = new NamedObjectInstantiator();
     private static final Type OBJECT = Type.getType(Object.class);
     private static final Type STRING = Type.getType(String.class);
     private static final Type NAMED_OBJECT_INSTANTIATOR = Type.getType(NamedObjectInstantiator.class);
     private static final Type CLASS_GENERATING_LOADER = Type.getType(ClassGeneratingLoader.class);
     private static final Type MANAGED = Type.getType(Managed.class);
+    private static final Type FACTORY_TYPE = Type.getType(HasManagedState.Factory.class);
+    private static final Type CLASS = Type.getType(Class.class);
+    private static final Type OBJECT_ARRAY = Type.getType(Object[].class);
     private static final String[] INTERFACES_FOR_ABSTRACT_CLASS = {MANAGED.getInternalName()};
     private static final String RETURN_VOID = Type.getMethodDescriptor(Type.VOID_TYPE);
     private static final String RETURN_STRING = Type.getMethodDescriptor(STRING);
-    private static final String RETURN_CLASS = Type.getMethodDescriptor(Type.getType(Class.class));
-    private static final String RETURN_OBJECT_ARRAY = Type.getMethodDescriptor(Type.getType(Object[].class));
-    private static final String RETURN_MANAGED_FACTORY = Type.getMethodDescriptor(Type.getType(Managed.Factory.class));
+    private static final String RETURN_CLASS = Type.getMethodDescriptor(CLASS);
+    private static final String RETURN_OBJECT_ARRAY = Type.getMethodDescriptor(OBJECT_ARRAY);
+    private static final String RETURN_MANAGED_FACTORY = Type.getMethodDescriptor(FACTORY_TYPE);
     private static final String RETURN_VOID_FROM_STRING = Type.getMethodDescriptor(Type.VOID_TYPE, STRING);
     private static final String RETURN_OBJECT_FROM_STRING = Type.getMethodDescriptor(OBJECT, STRING);
     private static final String NAME_FIELD = "_gr_name_";
@@ -269,6 +272,9 @@ public class NamedObjectInstantiator implements Managed.Factory {
         } catch (Exception e) {
             throw UncheckedException.throwAsUncheckedException(e);
         }
+    }
+
+    public interface Managed extends HasManagedState, Named {
     }
 
     private void visitFields(Class<?> type, ValidationProblemCollector collector) {
